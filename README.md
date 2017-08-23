@@ -15,6 +15,7 @@ This is an implementatioin of a stereo matching method described in
   url       = {http://arxiv.org/abs/1603.08328},
 }
 ```
+Paper: https://arxiv.org/abs/1603.08328
 
 If you use our code, please cite the above paper. We also encourage to cite the following conference paper too.
 
@@ -29,6 +30,7 @@ If you use our code, please cite the above paper. We also encourage to cite the 
   pages     = {1613--1620},
 }
 ```
+See also our project site http://taniai.space/projects/stereo/.
 
 ## Running environment
 - Visual Studio 2017 Community
