@@ -60,4 +60,5 @@ For demonstration, please use Adirondack below that contains image pairs, calibr
 - trainingH (23.0 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH.rar 
 - testH (16.7 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar
 - Adirondack (1.2 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip
+
 Note that these matching costs are raw outputs from CNNs without cross-based filter and SGM aggregation.
