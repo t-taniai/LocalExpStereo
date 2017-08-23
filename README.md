@@ -1,4 +1,4 @@
-# Continuous 3D Label Stereo Matching using Local Expansion Moves
+# Continuous Stereo Matching using Local Expansion Moves
 
 This is an implementatioin of a stereo matching method described in
 
