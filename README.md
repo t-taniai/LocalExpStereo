@@ -57,6 +57,6 @@ See also our project site http://taniai.space/projects/stereo/ and paper https:/
 We use matching cost volumes computed by MC-CNN-acrt (https://github.com/jzbontar/mc-cnn).
 We provide pre-computed matching cost data for 30 test and training image pairs of Middlebury benchmark V3.
 For demonstration, please use Adirondack below that contains image pairs, calibration data, and ground truth.
-- trainingH: http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH.rar 
-- testH: http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar
-- Adirondack: http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip
+- trainingH (23.0 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH.rar 
+- testH (16.7 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar
+- Adirondack (1.2 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip
