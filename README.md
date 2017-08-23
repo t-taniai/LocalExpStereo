@@ -42,11 +42,13 @@ If you use our code, please cite the above paper and cite the following conferen
 4. Run demo.bat file. Results will be saved in "results/cones", "results/teddy", and "results/Adirondack".
 
 ## Options
-- -doDual <0,1>: Estimate left and right image disparities and do post-processing using consistency check.
+- -mode MiddV2: Use settings for Middlebury V2. Assume imL.png and imR.png, etc. 
+- -mode MiddV3: Use settings for Middlebury V3. Assume im0.png and im1.png, etc. with MC-CNN matching cost files.
+- -doDual <0,1>: Estimate left and right disparities and do post-processing using consistency check.
 - -iterations <int>: Number of main iterations.
 - -pmIterations <int>: Number of initial iterations performed without smoothness terms (this accelerates inference).
 - -smooth_weight <float>: Smoothness weight (lambda in the paper).
-- -filterRedious <int>: The redius of matching windows (filterRedious/2 is used as the kernel radius of guided image filter).
+- -filterRedious <int>: The redius of matching windows (ie, filterRedious/2 is the kernel radius of guided image filter).
 
 ## Pre-computed MC-CNN matching costs
 We use matching cost volumes computed by MC-CNN-acrt (https://github.com/jzbontar/mc-cnn).
