@@ -35,6 +35,19 @@ If you use our code, please cite the above paper and cite the following conferen
 - OpenCV 3.02 (will be automatically installed via NuGet)
 - Maxflow code v3.01 by Boykov and Kolmogorov (http://vision.csd.uwo.ca/code/)
 
+## How to Run?
+1. Download and extract maxflow source code to "maxflow" directory. 
+2. Download and extract an example dataset (see Adirondack below) in "data/MiddV3/Adirondack".
+3. Build the solution with release mode.
+4. Run demo.bat file. Results will be saved in "results/cones", "results/teddy", and "results/Adirondack".
+
+## Options
+- -doDual <0,1>: Estimate left and right image disparities and do post-processing using consistency check.
+- -iterations <int>: Number of main iterations.
+- -pmIterations <int>: Number of initial iterations performed without smoothness terms (this accelerates inference).
+- -smooth_weight <float>: Smoothness weight (lambda in the paper).
+- -filterRedious <int>: The redius of matching windows (filterRedious/2 is used as the kernel radius of guided image filter).
+
 ## Pre-computed MC-CNN matching costs
 We use matching cost volumes computed by MC-CNN-acrt (https://github.com/jzbontar/mc-cnn).
 We provide pre-computed matching cost data for 30 test and training image pairs of Middlebury benchmark V3.
