@@ -55,7 +55,7 @@ See also our project site http://taniai.space/projects/stereo/ and paper https:/
 
 ## Updates
 - The function of initial iterations (option: pmIterations) is added to accelerate the inference.
-- The implementation of guided image filter has been improved from the paper, which reduces the running times by half.
+- The implementation of guided image filter has been improved from the paper, which reduces the running time of our method by half.
 
 ## Pre-computed MC-CNN matching costs
 We use matching cost volumes computed by MC-CNN-acrt (https://github.com/jzbontar/mc-cnn).
