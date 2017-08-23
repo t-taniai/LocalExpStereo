@@ -16,7 +16,7 @@ This is an implementatioin of a stereo matching method described in
 }
 ```
 
-If you use our code, please cite the above paper (note in the latest preprint (v2 in 2017) the title has been slightly changed from the above v1 in 2016). We also encourage to cite the following conference paper too.
+If you use our code, please cite the above paper. (Note that we have slightly changed the title in the latest preprint v2 in 2017 from the above v1 in 2016). We also encourage to cite the following conference paper too.
 
 ```
 @inproceedings{Taniai14,
