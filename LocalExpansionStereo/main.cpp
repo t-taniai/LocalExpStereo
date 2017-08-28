@@ -119,18 +119,18 @@ struct Calib
 	}
 };
 
-void fillOutOfView(cv::Mat& volume, int mode)
+void fillOutOfView(cv::Mat& volume, int mode, int margin = 0)
 {
 	int D = volume.size.p[0];
 	int H = volume.size.p[1];
 	int W = volume.size.p[2];
 
 	if (mode == 0)
-	for (int d = 1; d < D; d++)
+	for (int d = 0; d < D; d++)
 	for (int y = 0; y < H; y++)
 	{
 		auto p = volume.ptr<float>(d, y);
-		auto q = p + d;
+		auto q = p + d + margin;
 		float v = *q;
 		while (p != q){
 			*p = v;
@@ -138,17 +138,40 @@ void fillOutOfView(cv::Mat& volume, int mode)
 		}
 	}
 	else
-	for (int d = 1; d < D; d++)
+	for (int d = 0; d < D; d++)
 	for (int y = 0; y < H; y++)
 	{
 		auto q = volume.ptr<float>(d, y) + W;
-		auto p = q - d;
+		auto p = q - d - margin;
 		float v = p[-1];
 		while (p != q){
 			*p = v;
 			p++;
 		}
 	}
+}
+
+cv::Mat convertVolumeL2R(cv::Mat& volSrc, int margin = 0)
+{
+	int D = volSrc.size[0];
+	int H = volSrc.size[1];
+	int W = volSrc.size[2];
+	cv::Mat volDst = volSrc.clone();
+
+	for (int d = 0; d < D; d++)
+	{
+		cv::Mat_<float> s0(H, W, volSrc.ptr<float>() + H*W*d);
+		cv::Mat_<float> s1(H, W, volDst.ptr<float>() + H*W*d);
+		s0(cv::Rect(d, 0, W - d, H)).copyTo(s1(cv::Rect(0, 0, W - d, H)));
+
+		cv::Mat edge1 = s0(cv::Rect(W - 1 - margin, 0, 1, H)).clone();
+		cv::Mat edge0 = s0(cv::Rect(d + margin, 0, 1, H)).clone();
+		for (int x = W - 1 - d - margin; x < W; x++)
+			edge1.copyTo(s1.col(x));
+		for (int x = 0; x < margin; x++)
+			edge0.copyTo(s1.col(x));
+	}
+	return volDst;
 }
 
 void MidV2(const std::string inputDir, const std::string outputDir, const Options& options)
@@ -270,11 +293,23 @@ void MidV3(const std::string inputDir, const std::string outputDir, const Option
 
 	int sizes[] = { calib.ndisp, imL.rows, imL.cols };
 	cv::Mat volL = cv::Mat_<float>(3, sizes);
-	cv::Mat volR = cv::Mat_<float>(3, sizes);
 	cvutils::io::loadMatBinary(inputDir + "im0.acrt", volL, false);
+
+	// Interpolate disp+5 pixels from the left boundary.
+	// We take the margin of 5 pixels here, because MC-CNN uses 11x11 patches
+	// so 5 cols near boundary are inaccurate.
+	// This margin is implemented after the paper version.
+	fillOutOfView(volL, 0, 5);
+
+#if 0
 	cvutils::io::loadMatBinary(inputDir + "im1.acrt", volR, false);
-	fillOutOfView(volL, 0);
-	fillOutOfView(volR, 1);
+	cv::Mat volR = cv::Mat_<float>(3, sizes);
+	fillOutOfView(volR, 1, 5);
+#else
+	// This way we can save the file space for im1.acrt.
+	cv::Mat volR = convertVolumeL2R(volL, 5); 
+#endif
+
 
 	{
 		_mkdir((outputDir + "debug").c_str());
