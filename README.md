@@ -64,8 +64,9 @@ template class Graph<float,float,double>;
 We use matching cost volumes computed by MC-CNN-acrt (https://github.com/jzbontar/mc-cnn).
 We provide pre-computed matching cost data for 30 test and training image pairs of Middlebury benchmark V3.
 For demonstration, please use Adirondack below that contains image pairs, calibration data, and ground truth.
-- trainingH (23.0 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH.rar 
-- testH (16.7 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar
-- Adirondack (1.2 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip
+- trainingH (11.0 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH_im0.rar 
+- testH (7.9 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH_im0.rar
+- Adirondack (0.6 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip
 
+These files only provide cost volume data (im0.acrt) for the left images. The data for the right images can be recovered from the left data (see convertVolumeL2R function in main.cpp).
 Note that these matching costs are raw outputs from CNNs without cross-based filter and SGM aggregation.
