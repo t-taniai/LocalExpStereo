@@ -33,7 +33,7 @@ See also our project site http://taniai.space/projects/stereo/ and paper https:/
 
 ## Running environment
 - Visual Studio 2017 Community
-- OpenCV 3.02 (will be automatically installed via NuGet)
+- OpenCV 3 (OpenCV 3.2.0 package will be automatically installed via NuGet upon the initial build)
 - Maxflow code v3.01 by Boykov and Kolmogorov (http://vision.csd.uwo.ca/code/)
 
 ## How to Run?
