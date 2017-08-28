@@ -343,10 +343,12 @@ int main(int argc, const char** args)
 
 	if (options.threadNum > 0)
 		omp_set_num_threads(options.threadNum);
+	options.targetDir = "..\\data\\MiddV2\\teddy";
 
 	if (options.outputDir.length())
 		_mkdir((options.outputDir).c_str());
 
+	MidV2(options.targetDir + "/", options.outputDir + "/", options);
 	printf("\n\n");
 
 	std::string mode;
