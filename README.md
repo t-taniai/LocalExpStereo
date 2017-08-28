@@ -32,7 +32,7 @@ If you use our code, please cite the above paper. (Note that we have slightly ch
 See also our project site http://taniai.space/projects/stereo/ and paper https://arxiv.org/abs/1603.08328.
 
 ## Running environment
-- Visual Studio 2017 Community
+- Visual Studio 2017 Community (installed with the VC++ 2015 vc140 toolset if using the following OpenCV build)
 - OpenCV 3 (OpenCV 3.1.0 package will be automatically installed via NuGet upon the initial build)
 - Maxflow code v3.01 by Boykov and Kolmogorov (http://vision.csd.uwo.ca/code/)
 
