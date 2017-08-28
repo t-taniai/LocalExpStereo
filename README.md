@@ -37,7 +37,10 @@ See also our project site http://taniai.space/projects/stereo/ and paper https:/
 - Maxflow code v3.01 by Boykov and Kolmogorov (http://vision.csd.uwo.ca/code/)
 
 ## How to Run?
-1. Download and extract maxflow source code to "maxflow" directory. 
+1. Download and extract maxflow source code to "maxflow" directory. Modify instances.inc to add the following line
+```
+template class Graph<float,float,double>;
+```
 2. Download and extract an example dataset (see Adirondack below) in "data/MiddV3/Adirondack".
 3. Build the solution with release mode.
 4. Run demo.bat file. Results will be saved in "results/cones", "results/teddy", and "results/Adirondack".
