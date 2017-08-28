@@ -333,7 +333,7 @@ int main(int argc, const char** args)
 
 	int nThread = omp_get_max_threads();
 	unsigned int seed = (unsigned int)time(NULL);
-	seed = 0;
+	//seed = 0;
 	#pragma omp parallel for
 	for (int j = 0; j < nThread; j++)
 	{
