@@ -33,7 +33,7 @@ See also our project site http://taniai.space/projects/stereo/ and paper https:/
 
 ## Running environment
 - Visual Studio 2017 Community
-- OpenCV 3 (OpenCV 3.2.0 package will be automatically installed via NuGet upon the initial build)
+- OpenCV 3 (OpenCV 3.1.0 package will be automatically installed via NuGet upon the initial build)
 - Maxflow code v3.01 by Boykov and Kolmogorov (http://vision.csd.uwo.ca/code/)
 
 ## How to Run?
@@ -42,7 +42,7 @@ See also our project site http://taniai.space/projects/stereo/ and paper https:/
 template class Graph<float,float,double>;
 ```
 2. Download and extract an example dataset (see Adirondack below) in "data/MiddV3/Adirondack".
-3. Build the solution with release mode. (Doing this will automatically install OpenCV3 package via NuGet. If not, you need to manually install OpenCV3 binaries for the corresponding version of the platform toolset . For the platform toolset vc140, I installed OpenCV by doing "Install-Package opencvcontrib -Version 3.1.0" on the Package Manager console.)
+3. Build the solution with release mode. (Doing this will automatically install OpenCV3 package via NuGet. If not, you need to manually install OpenCV3 binaries for the corresponding version of the platform toolset . For the platform toolset vc140, I installed OpenCV by doing "Install-Package opencvcontrib -Version 3.1.0" on the Package Manager console of VS2017.)
 4. Run demo.bat file. Results will be saved in "results/cones", "results/teddy", and "results/Adirondack".
 
 ## Options
