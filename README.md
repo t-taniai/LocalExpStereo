@@ -42,7 +42,7 @@ See also our project site http://taniai.space/projects/stereo/ and paper https:/
 template class Graph<float,float,double>;
 ```
 2. Download and extract an example dataset (see Adirondack below) in "data/MiddV3/Adirondack".
-3. Build the solution with release mode.
+3. Build the solution with release mode. (Doing this will automatically install OpenCV3 package via NuGet. If not, you need to manually install OpenCV3 binaries for the corresponding VS version. For VS 2017, I installed it by doing "Install-Package opencv.win.native -Version 320.1.1-vs141" on the Package Manager console.)
 4. Run demo.bat file. Results will be saved in "results/cones", "results/teddy", and "results/Adirondack".
 
 ## Options
