@@ -32,7 +32,7 @@ struct Options
 
 		argParser.TryGetArgment("filterRadious", filterRadious);
 		argParser.TryGetArgment("smooth_weight", smooth_weight);
-		argParser.TryGetArgment("pmInit", pmIterations);
+		argParser.TryGetArgment("pmIterations", pmIterations);
 		argParser.TryGetArgment("iterations", iterations);
 		argParser.TryGetArgment("threadNum", threadNum);
 		argParser.TryGetArgment("doDual", doDual);
