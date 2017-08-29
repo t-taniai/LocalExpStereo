@@ -46,15 +46,17 @@ template class Graph<float,float,double>;
 4. Run demo.bat file. Results will be saved in "results/cones", "results/teddy", and "results/Adirondack".
 
 ## Options
-- -mode MiddV2: Use settings for Middlebury V2. Assume imL.png and imR.png, etc. 
-- -mode MiddV3: Use settings for Middlebury V3. Assume im0.png and im1.png, etc. with MC-CNN matching cost files.
+- -mode MiddV2: Use settings for Middlebury V2.
+- -mode MiddV3: Use settings for Middlebury V3. Assume a MC-CNN matching cost file (im0.acrt) in targetDir.
 - -targetDir {string}: Directory that contains target image pairs.
 - -outputDir {string}: Directory for saving results. disp0.pfm is the primary result. Intermediate results are also saved in "debug" sub-directory.
 - -doDual {0,1}: Estimate left and right disparities and do post-processing using consistency check.
 - -iterations {int}: Number of main iterations.
 - -pmIterations {int}: Number of initial iterations performed before main iterations without smoothness terms (this accelerates inference).
+- -ndisp {int}: Define the disparity range [0, ndisp-1]. It not specified, try to retrieve from files (calib.txt or info.txt). 
 - -smooth_weight {float}: Smoothness weight (lambda in the paper).
 - -filterRedious {int}: The redius of matching windows (ie, filterRedious/2 is the kernel radius of guided image filter).
+- -mc_threshold {float}: Parameter tau_cnn in the paper that truncates MC-CNN matching cost values.
 
 ## Updates
 - The function of initial iterations (option: pmIterations) is added to accelerate the inference.

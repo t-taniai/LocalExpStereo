@@ -13,14 +13,17 @@
 
 struct Options
 {
-	std::string outputDir = "./results";
-	std::string targetDir = "E:/dataset";
+	std::string mode = ""; // "MiddV2" or "MiddV3"
+	std::string outputDir = "";
+	std::string targetDir = "";
 
-	int iterations = 7;
+	int iterations = 5;
 	int pmIterations = 2;
 	bool doDual = false;
 
+	int ndisp = 0;
 	float smooth_weight = 1.0;
+	float mc_threshold = 0.5;
 	int filterRadious = 20;
 
 	int threadNum = -1;
@@ -29,18 +32,28 @@ struct Options
 	{
 		argParser.TryGetArgment("outputDir", outputDir);
 		argParser.TryGetArgment("targetDir", targetDir);
+		argParser.TryGetArgment("mode", mode);
 
-		argParser.TryGetArgment("filterRadious", filterRadious);
-		argParser.TryGetArgment("smooth_weight", smooth_weight);
-		argParser.TryGetArgment("pmIterations", pmIterations);
-		argParser.TryGetArgment("iterations", iterations);
+		if (mode == "MiddV2")
+			smooth_weight = 1.0;
+		else if (mode == "MiddV3")
+			smooth_weight = 0.5;
+
 		argParser.TryGetArgment("threadNum", threadNum);
 		argParser.TryGetArgment("doDual", doDual);
+		argParser.TryGetArgment("iterations", iterations);
+		argParser.TryGetArgment("pmIterations", pmIterations);
+
+		argParser.TryGetArgment("ndisp", ndisp);
+		argParser.TryGetArgment("filterRadious", filterRadious);
+		argParser.TryGetArgment("smooth_weight", smooth_weight);
+		argParser.TryGetArgment("mc_threshold", mc_threshold);
 	}
 
 	void printOptionValues(FILE * out = stdout)
 	{
-		fprintf(out, "----------- parameter settings -----------\n", outputDir.c_str());
+		fprintf(out, "----------- parameter settings -----------\n");
+		fprintf(out, "mode           : %s\n", mode.c_str());
 		fprintf(out, "outputDir      : %s\n", outputDir.c_str());
 		fprintf(out, "targetDir      : %s\n", targetDir.c_str());
 
@@ -48,10 +61,11 @@ struct Options
 		fprintf(out, "doDual         : %d\n", (int)doDual);
 		fprintf(out, "pmIterations   : %d\n", pmIterations);
 		fprintf(out, "iterations     : %d\n", iterations);
-		
+
+		fprintf(out, "ndisp          : %d\n", ndisp);
 		fprintf(out, "filterRadious  : %d\n", filterRadious);
-		
 		fprintf(out, "smooth_weight  : %f\n", smooth_weight);
+		fprintf(out, "mc_threshold   : %f\n", mc_threshold);
 	}
 };
 
@@ -72,6 +86,9 @@ struct Calib
 	int vmax;
 	float dyavg;
 	float dymax;
+	float gt_prec; // for V2 only
+
+	// ----------- format of calib.txt ----------
 	//cam0 = [2852.758 0 1424.085; 0 2852.758 953.053; 0 0 1]
 	//cam1 = [2852.758 0 1549.445; 0 2852.758 953.053; 0 0 1]
 	//doffs = 125.36
@@ -85,7 +102,7 @@ struct Calib
 	//dyavg = 0.408
 	//dymax = 1.923
 
-	Calib(std::string filename)
+	Calib()
 		: doffs(0)
 		, baseline(0)
 		, width(0)
@@ -96,6 +113,12 @@ struct Calib
 		, vmax(0)
 		, dyavg(0)
 		, dymax(0)
+		, gt_prec(-1)
+	{
+	}
+
+	Calib(std::string filename)
+		: Calib()
 	{
 		FILE* fp = fopen(filename.c_str(), "r");
 		char buff[512];
@@ -174,40 +197,88 @@ cv::Mat convertVolumeL2R(cv::Mat& volSrc, int margin = 0)
 	return volDst;
 }
 
-void MidV2(const std::string inputDir, const std::string outputDir, const Options& options)
+bool loadData(const std::string inputDir, cv::Mat& im0, cv::Mat& im1, cv::Mat& dispGT, cv::Mat& nonocc, Calib& calib)
 {
-	int ndisp = 59, gt_scale = 4;
+	if (calib.ndisp <= 0)
+		printf("Try to retrieve ndisp from files [info.txt, calib.txt].\n");
+	FILE *fp = fopen((inputDir + "info.txt").c_str(), "r");
+	if (fp != nullptr) {
+		int gt_scale;
+		int ndisp;
+		fscanf(fp, "%d", &gt_scale); // Scaling factor of intensity to disparity for ground truth
+		fscanf(fp, "%d", &ndisp);
+		fclose(fp);
+		calib.gt_prec = 1.0 / gt_scale;
+		if(calib.ndisp <= 0) calib.ndisp = ndisp;
+	}
+	else
 	{
-		FILE *fp = fopen((inputDir + "info.txt").c_str(), "r");
-		if (fp != nullptr) {
-			fscanf(fp, "%d", &gt_scale); // Scaling factor of intensity to disparity for ground truth
-			fscanf(fp, "%d", &ndisp);
-			fclose(fp);
+		int ndisp = calib.ndisp;
+		calib = Calib(inputDir + "calib.txt");
+		if (ndisp > 0) calib.ndisp = ndisp;
+	}
+	if (calib.ndisp <= 0)
+	{
+		printf("ndisp is not speficied.\n");
+		return false;
+	}
+
+
+	im0 = cv::imread(inputDir + "imL.png");
+	im1 = cv::imread(inputDir + "imR.png");
+	if (im0.empty() || im1.empty())
+	{
+		im0 = cv::imread(inputDir + "im0.png");
+		im1 = cv::imread(inputDir + "im1.png");
+
+		if (im0.empty() || im1.empty())
+		{
+			printf("Image pairs (im0.png, im1.png) or (imL.png, imR.png) not found in\n");
+			printf("%s\n", inputDir.c_str());
+			return false;
 		}
 	}
-	double maxdisp = ndisp - 1;
-	double vdisp = 0;
-	printf("ndisp = %d\n", ndisp);
 
-	cv::Mat imL = cv::imread(inputDir + "imL.png");
-	cv::Mat imR = cv::imread(inputDir + "imR.png");
-
-	if (imL.empty() || imR.empty()) {
-		printf("Files imL.png and imR.png not found in\n");
-		printf("%s\n", inputDir.c_str());
-		return;
+	dispGT = cv::imread(inputDir + "groundtruth.png", cv::IMREAD_GRAYSCALE);
+	if (!dispGT.empty())
+	{
+		if(calib.gt_prec > 0)
+			dispGT.convertTo(dispGT, CV_32F, calib.gt_prec);
+		dispGT.setTo(cv::Scalar(INFINITY), dispGT == 0);
 	}
+	else
+	{
+		dispGT = cvutils::io::read_pfm_file(inputDir + "disp0GT.pfm");
+	}
+	if (dispGT.empty())
+		dispGT = cv::Mat_<float>::zeros(im0.size());
+
+
+	nonocc = cv::imread(inputDir + "nonocc.png", cv::IMREAD_GRAYSCALE);
+	if(nonocc.empty())
+		nonocc = cv::imread(inputDir + "mask0nocc.png", cv::IMREAD_GRAYSCALE);
+
+	if (!nonocc.empty()) 
+		nonocc = nonocc == 255;
+	else
+		nonocc = cv::Mat_<uchar>(im0.size(), 255);
+
+	return true;
+}
+
+void MidV2(const std::string inputDir, const std::string outputDir, const Options& options)
+{
+	cv::Mat imL, imR, dispGT, nonocc;
+	Calib calib;
+
+	calib.ndisp = options.ndisp; // ndisp of argument option has higher priority
+	if (loadData(inputDir, imL, imR, dispGT, nonocc, calib) == false)
+		return;
+	printf("ndisp = %d\n", calib.ndisp);
 
 	double errorThresh = 0.5;
-
-	cv::Mat dispGT = cv::imread(inputDir + "groundtruth.png", cv::IMREAD_GRAYSCALE);
-	cv::Mat nonocc = cv::imread(inputDir + "nonocc.png", cv::IMREAD_GRAYSCALE);
-	if (!nonocc.empty()) nonocc = nonocc == 255;
-
-	if (dispGT.empty()) dispGT = cv::Mat_<float>::zeros(imL.size());
-	if (nonocc.empty()) nonocc = cv::Mat_<uchar>::zeros(imL.size());
-
-	dispGT.convertTo(dispGT, CV_32F, 1.0 / gt_scale);
+	double vdisp = 0; // Purtubation of vertical displacement in the range of [-vdisp, vdisp]
+	double maxdisp = calib.ndisp - 1;
 
 	Parameters param = paramsGF;
 	param.windR = options.filterRadious;
@@ -217,7 +288,7 @@ void MidV2(const std::string inputDir, const std::string outputDir, const Option
 		_mkdir((outputDir + "debug").c_str());
 
 		Evaluator *eval = new Evaluator(dispGT, nonocc, 255.0 / (maxdisp), "result", outputDir + "debug\\");
-		eval->setPrecision(1.0 / gt_scale);
+		eval->setPrecision(calib.gt_prec);
 		eval->showProgress = false;
 		eval->setErrorThreshold(errorThresh);
 
@@ -258,42 +329,32 @@ void MidV2(const std::string inputDir, const std::string outputDir, const Option
 
 void MidV3(const std::string inputDir, const std::string outputDir, const Options& options)
 {
-	Calib calib(inputDir + "calib.txt");
-	double maxdisp = calib.ndisp - 1;
-	printf("ndisp = %d\n", calib.ndisp);
-	printf("dyavr = %lf\n", calib.dyavg);
-	printf("dymax = %lf\n", calib.dymax);
+	cv::Mat imL, imR, dispGT, nonocc;
+	Calib calib;
 
-	cv::Mat imL = cv::imread(inputDir + "im0.png");
-	cv::Mat imR = cv::imread(inputDir + "im1.png");
-
-	if (imL.empty() || imR.empty()) {
-		printf("Files im0.png and im1.png not found in\n");
-		printf("%s\n", inputDir.c_str());
+	calib.ndisp = options.ndisp; // ndisp of argument option has higher priority
+	if (loadData(inputDir, imL, imR, dispGT, nonocc, calib) == false)
 		return;
-	}
+	printf("ndisp = %d\n", calib.ndisp);
 
-	double errorThresh = 2.0;
+	double maxdisp = calib.ndisp - 1;
+	double errorThresh = 1.0;
 	if (cvutils::contains(inputDir, "trainingQ") || cvutils::contains(inputDir, "testQ"))
-		errorThresh = errorThresh / 4.0;
-	else if (cvutils::contains(inputDir, "trainingH") || cvutils::contains(inputDir, "testH"))
 		errorThresh = errorThresh / 2.0;
-
-	cv::Mat dispGT = cvutils::io::read_pfm_file(inputDir + "disp0GT.pfm");
-	cv::Mat nonocc = cv::imread(inputDir + "mask0nocc.png", cv::IMREAD_GRAYSCALE);
-	if (!nonocc.empty()) nonocc = nonocc == 255;
-
-	if (dispGT.empty()) dispGT = cv::Mat_<float>::zeros(imL.size());
-	if (nonocc.empty()) nonocc = cv::Mat_<uchar>::zeros(imL.size());
+	else if (cvutils::contains(inputDir, "trainingF") || cvutils::contains(inputDir, "testF"))
+		errorThresh = errorThresh * 2.0;
 
 	Parameters param = paramsGF;
 	param.windR = options.filterRadious;
 	param.lambda = options.smooth_weight;
-	param.th_col = 0.5; // tau_CNN in the paper
+	param.th_col = options.mc_threshold; // tau_CNN in the paper
 
 	int sizes[] = { calib.ndisp, imL.rows, imL.cols };
 	cv::Mat volL = cv::Mat_<float>(3, sizes);
-	cvutils::io::loadMatBinary(inputDir + "im0.acrt", volL, false);
+	if (cvutils::io::loadMatBinary(inputDir + "im0.acrt", volL, false) == false) {
+		printf("Cost volume file im0.acrt not found\n");
+		return;
+	}
 
 	// Interpolate disp+5 pixels from the left boundary.
 	// We take the margin of 5 pixels here, because MC-CNN uses 11x11 patches
@@ -385,17 +446,23 @@ int main(int argc, const char** args)
 	printf("\n\n");
 
 	std::string mode;
-	if (parser.TryGetArgment("mode", mode) && mode == "MiddV2")
+	if (options.mode == "MiddV2")
 	{
-		printf("Running Middlebury V2 mode.\n");
+		printf("Running by Middlebury V2 mode.\n");
 		MidV2(options.targetDir + "/", options.outputDir + "/", options);
 	}
-
-	if (parser.TryGetArgment("mode", mode) && mode == "MiddV3")
+	else if (options.mode == "MiddV3")
 	{
-		printf("Running Middlebury V3 mode.\n");
-		printf("This mode assumes MC-CNN matching cost files in targetDir.\n");
+		printf("Running by Middlebury V3 mode.\n");
+		printf("This mode assumes a MC-CNN matching cost file (im0.acrt) in targetDir.\n");
 		MidV3(options.targetDir + "/", options.outputDir + "/", options);
+	}
+	else
+	{
+		printf("Specify the following arguments:\n");
+		printf("  -mode [MiddV2, MiddV3]\n");
+		printf("  -targetDir [PATH_TO_IMAGE_DIR]\n");
+		printf("  -outputDir [PATH_TO_OUTPUT_DIR]\n");
 	}
 
 	return 0;
@@ -403,15 +470,16 @@ int main(int argc, const char** args)
 
 /* Make a bat file....
 
+echo off
+
 set bin=%~dp0x64\Release\LocalExpansionStereo.exe
 set datasetroot=%~dp0data
 set resultsroot=%~dp0results
 
 mkdir "%resultsroot%"
-"%bin%" -targetDir "%datasetroot%\MiddV2\cones" -outputDir "%resultsroot%\cones_nogt" -mode MiddV2 -smooth_weight 1
-"%bin%" -targetDir "%datasetroot%\MiddV2\cones" -outputDir "%resultsroot%\cones" -mode MiddV2 -smooth_weight 1
+"%bin%" -targetDir "%datasetroot%\MiddV2\cones" -outputDir "%resultsroot%\cones" -mode MiddV2 -smooth_weight 1 -doDual 1
+"%bin%" -targetDir "%datasetroot%\MiddV2\teddy" -outputDir "%resultsroot%\teddy" -mode MiddV2 -smooth_weight 1
 "%bin%" -targetDir "%datasetroot%\MiddV3\Adirondack" -outputDir "%resultsroot%\Adirondack" -mode MiddV3 -smooth_weight 0.5
-pause;
 
 
 */

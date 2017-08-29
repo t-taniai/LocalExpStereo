@@ -126,9 +126,9 @@ public:
 
 		cv::Mat disparityMapVis = disp * DISPARITY_FACTOR / 255;
 		cv::Mat normalMapVis = energy2.computeNormalMap(labeling);
-		cv::Mat vdispMapVis;
-		cv::extractChannel(labeling, vdispMapVis, 3);
-		vdispMapVis = (vdispMapVis + 3.0) / 6.0;
+		//cv::Mat vdispMapVis;
+		//cv::extractChannel(labeling, vdispMapVis, 3);
+		//vdispMapVis = (vdispMapVis + 3.0) / 6.0;
 
 		cv::Mat errorMap = cv::abs(disp - dispGT) <= errorThreshold;
 		cv::Mat errorMapVis = errorMap | (~validMask);
@@ -165,13 +165,10 @@ public:
 			cv::imwrite(saveDir + cv::format("%s%dN%02d.png", header, mode, index), normalMapVis * 255);
 			cv::imwrite(saveDir + cv::format("%s%dE%02d.png", header, mode, index), errorMapVis);
 
+			if (fp_output != nullptr && mode == 0)
 			{
-				if (fp_output != nullptr)
-				{
-					fprintf(fp_output, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", getCurrentTime(), eng2, dc2, sc2, all, nonocc);
-					fflush(fp_output);
-				}
-
+				fprintf(fp_output, "%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", getCurrentTime(), eng2, dc2, sc2, all, nonocc);
+				fflush(fp_output);
 			}
 		}
 
