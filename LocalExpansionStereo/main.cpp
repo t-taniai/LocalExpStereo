@@ -355,20 +355,21 @@ void MidV3(const std::string inputDir, const std::string outputDir, const Option
 		printf("Cost volume file im0.acrt not found\n");
 		return;
 	}
+	int interp_margin = 0; // Disabled as the use of margin worsens the results...
+	fillOutOfView(volL, 0, interp_margin);
 
-	// Interpolate disp+5 pixels from the left boundary.
-	// We take the margin of 5 pixels here, because MC-CNN uses 11x11 patches
-	// so 5 cols near boundary are inaccurate.
-	// This margin is implemented after the paper version.
-	fillOutOfView(volL, 0, 5);
-
-#if 0
-	cvutils::io::loadMatBinary(inputDir + "im1.acrt", volR, false);
+#if 1
 	cv::Mat volR = cv::Mat_<float>(3, sizes);
-	fillOutOfView(volR, 1, 5);
+	if (cvutils::io::loadMatBinary(inputDir + "im1.acrt", volR, false) == false) {
+		printf("Cost volume file im1.acrt not found so recovered from im0.acrt.\n");
+		volR = convertVolumeL2R(volL, interp_margin);
+	}
+	fillOutOfView(volR, 1, interp_margin);
 #else
 	// This way we can save the file space for im1.acrt.
-	cv::Mat volR = convertVolumeL2R(volL, 5); 
+	// To exactly recover volR from volL, we need to run MC-CNN without using "fixborder" func.
+	// Plan to make cost volume files again in future...
+	cv::Mat volR = convertVolumeL2R(volL, interp_margin);
 #endif
 
 
@@ -454,7 +455,7 @@ int main(int argc, const char** args)
 	else if (options.mode == "MiddV3")
 	{
 		printf("Running by Middlebury V3 mode.\n");
-		printf("This mode assumes a MC-CNN matching cost file (im0.acrt) in targetDir.\n");
+		printf("This mode assumes MC-CNN matching cost files (im0.acrt, im1.acrt) in targetDir.\n");
 		MidV3(options.targetDir + "/", options.outputDir + "/", options);
 	}
 	else
