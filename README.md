@@ -16,7 +16,7 @@ This is an implementatioin of a stereo matching method described in
 }
 ```
 
-The code is for research purpose only. If you use our code, please cite the above paper. (Note that we have slightly changed the title in the latest preprint v2 in 2017 from the above v1 in 2016). We also encourage to cite the following conference paper too.
+The code is for research purpose only. If you use our code, please cite the above paper. (Note that although we have slightly changed the title in the latest preprint in 2017, we recommend to cite the above orginal version in 2016). We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique.
 
 ```
 @inproceedings{Taniai14,
@@ -29,12 +29,12 @@ The code is for research purpose only. If you use our code, please cite the abov
   pages     = {1613--1620},
 }
 ```
-See also our project site http://taniai.space/projects/stereo/ and paper https://arxiv.org/abs/1603.08328.
+See also [our project site](http://taniai.space/projects/stereo/) and [paper](https://arxiv.org/abs/1603.08328).
 
 ## Running environment
 - Visual Studio 2017 Community (installed with the VC++ 2015 vc140 toolset if using the following OpenCV build)
 - OpenCV 3 (OpenCV 3.1.0 package will be automatically installed via NuGet upon the initial build)
-- Maxflow code v3.01 by Boykov and Kolmogorov (http://vision.csd.uwo.ca/code/)
+- Maxflow code v3.01 by Boykov and Kolmogorov [[Link]](http://vision.csd.uwo.ca/code/)
 
 ## How to Run?
 1. Download and extract maxflow source code to "maxflow" directory. Modify instances.inc to add the following line
@@ -63,11 +63,11 @@ template class Graph<float,float,double>;
 - The implementation of guided image filter has been improved from the paper, which reduces the running time of our method by half.
 
 ## Pre-computed MC-CNN matching costs
-We use matching cost volumes computed by MC-CNN-acrt (https://github.com/jzbontar/mc-cnn).
+We use matching cost volumes computed by [MC-CNN-acrt](https://github.com/jzbontar/mc-cnn).
 We provide pre-computed matching cost data for 30 test and training image pairs of Middlebury benchmark V3.
 For demonstration, please use Adirondack below that contains image pairs, calibration data, and ground truth.
-- trainingH (15.7 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH.rar 
-- testH (22.0 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar
-- Adirondack (1.2 GB): http://www.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip
+- [trainingH (15.7 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH.rar)
+- [testH (22.0 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar)
+- [Adirondack (1.2 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip)
 
 Note that these matching costs are raw outputs from CNNs without cross-based filter and SGM aggregation.
