@@ -66,8 +66,13 @@ public:
 		}
 		else if (params.filterName == "GF")
 		{
-			filter[0] = std::make_unique<FastGuidedImageFilter<double>>(imL, params.windR / 2, params.filter_param1, 1.0/255);
-			filter[1] = std::make_unique<FastGuidedImageFilter<double>>(imR, params.windR / 2, params.filter_param1, 1.0/255);
+			filter[0] = std::make_unique<FastGuidedImageFilter<double>>(imL, params.windR / 2, params.filter_param1, 1.0 / 255);
+			filter[1] = std::make_unique<FastGuidedImageFilter<double>>(imR, params.windR / 2, params.filter_param1, 1.0 / 255);
+		}
+		else if (params.filterName == "GFfloat")
+		{
+			filter[0] = std::make_unique<FastGuidedImageFilter<float>>(imL, params.windR / 2, params.filter_param1, 1.0 / 255);
+			filter[1] = std::make_unique<FastGuidedImageFilter<float>>(imR, params.windR / 2, params.filter_param1, 1.0 / 255);
 		}
 		else //if (params.filterName == "")
 		{

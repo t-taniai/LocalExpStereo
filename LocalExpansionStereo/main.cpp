@@ -71,6 +71,7 @@ struct Options
 
 const Parameters paramsBF = Parameters(20, 20, "BF", 10);
 const Parameters paramsGF = Parameters(1.0, 20, "GF", 0.0001);
+const Parameters paramsGFfloat = Parameters(1.0, 20, "GFfloat", 0.0001); // Slightly faster
 
 struct Calib
 {

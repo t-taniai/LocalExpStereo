@@ -22,7 +22,7 @@ struct Parameters
 	float filter_param1;
 	int windR;
 	int neighborNum;
-	std::string filterName; // "BF" or "GF" or ""
+	std::string filterName; // "BF" or "GF" or "GFfloat" or ""
 
 	Parameters(float lambda = 20, int windR = 20, std::string filterName = "BF", float filter_param1 = 10)
 		: alpha(0.9)
@@ -565,6 +565,11 @@ public:
 			// Running time slightly improves by changing double to float (but results also slightly change).
 			filter[0] = std::make_unique<FastGuidedImageFilter<double>>(imL, params.windR / 2, params.filter_param1, 1.0 / 255);
 			filter[1] = std::make_unique<FastGuidedImageFilter<double>>(imR, params.windR / 2, params.filter_param1, 1.0 / 255);
+		}
+		else if (params.filterName == "GFfloat")
+		{
+			filter[0] = std::make_unique<FastGuidedImageFilter<float>>(imL, params.windR / 2, params.filter_param1, 1.0 / 255);
+			filter[1] = std::make_unique<FastGuidedImageFilter<float>>(imR, params.windR / 2, params.filter_param1, 1.0 / 255);
 		}
 		else //if (params.filterName == "")
 		{

@@ -11,5 +11,5 @@ x64/Release/LocalExpansionStereo.iobj
 *.idb
 LocalExpansionStereo/results/
 results/
-data/MiddV3/Adirondack/
-data/MiddV3/Vintage/
+data/MiddV3/trainingH/Adirondack
+data/MiddV3/trainingH/Vintage
