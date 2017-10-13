@@ -58,7 +58,7 @@ namespace cvutils
 			size_t count = fread((void *)&data[0], sizeof(float), datasize, f);
 			if (count != datasize)
 			{
-				printf("Expected size %d, read size %d.\n", datasize, count);
+				printf("Expected size %zu, read size %zu.\n", datasize, count);
 				printf("Could not read ground truth file.\n");
 				return cv::Mat();
 			}
@@ -90,7 +90,7 @@ namespace cvutils
 			fopen_s(&stream, filename.c_str(), "wb");
 			if (stream == NULL)
 			{
-				wprintf(L"PFM file absent: %s\n\n", filename.c_str());
+				printf("PFM file absent: %s\n\n", filename.c_str());
 				return;
 			}
 			// write the header: 3 lines: Pf, dimensions, scale factor (negative val == little endian)

@@ -122,7 +122,7 @@ public:
 					int d0 = int(d) + D0;
 					int d1 = d0 + 1;
 					float f1 = d - std::floor(d);
-					float f0 = 1.0 - f1;
+					float f0 = 1.0f - f1;
 					if (d1 >= D || d0 < 0){
 						printf("%lf %lf %lf %lf %lf %d %d %d %d %d %d\n", MAX_DISPARITY, MIN_DISPARITY, d, f1, f0, d0, d1, D, D0, y, x);
 						C = COST_FOR_INVALID;
@@ -148,7 +148,7 @@ public:
 					C = vol[mode].at<float>(0, y, x);
 				else if (d >= D)
 					C = vol[mode].at<float>(D - 1, y, x);
-				else if (isnan<float>(d) || isinf<float>(d))
+				else if (isnan<float>(d_base) || isinf<float>(d_base))
 					C = COST_FOR_INVALID;
 				else 
 					C = vol[mode].at<float>(d, y, x);
@@ -188,7 +188,7 @@ public:
 					float y2 = vol[mode].at<float>(d2, y, x);
 					float y3 = vol[mode].at<float>(d3, y, x);
 
-					float rd1 = d1, rd2 = d2, rd3 = d3;
+					float rd1 = (float)d1, rd2 = (float)d2, rd3 = (float)d3;
 					float a = y1 / (rd1 - rd2) / (rd1 - rd3);
 					float b = y2 / (rd2 - rd1) / (rd2 - rd3);
 					float c = y3 / (rd3 - rd1) / (rd3 - rd2);

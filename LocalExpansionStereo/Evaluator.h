@@ -9,7 +9,7 @@ class Evaluator
 	
 protected:
 	TimeStamper timer;
-	const double DISPARITY_FACTOR;
+	const float DISPARITY_FACTOR;
 	const cv::Mat dispGT;
 	const cv::Mat nonoccMask;
 	cv::Mat occMask;
@@ -20,8 +20,8 @@ protected:
 	int nonoccPixels;
 	FILE *fp_energy;
 	FILE *fp_output;
-	double qprecision;
-	double errorThreshold;
+	float qprecision;
+	float errorThreshold;
 	bool showedOnce;
 
 public:
@@ -35,7 +35,7 @@ public:
 		return saveDir;
 	}
 
-	Evaluator(cv::Mat dispGT, cv::Mat nonoccMask, double disparityFactor, std::string header = "result", std::string saveDir = "./", bool show = true, bool print = true, bool save = true)
+	Evaluator(cv::Mat dispGT, cv::Mat nonoccMask, float disparityFactor, std::string header = "result", std::string saveDir = "./", bool show = true, bool print = true, bool save = true)
 		: dispGT(dispGT)
 		, nonoccMask(nonoccMask)
 		, header(header)
@@ -66,10 +66,10 @@ public:
 		}
 
 		showedOnce = false;
-		errorThreshold = 0.5;
-		qprecision = 1.0 / DISPARITY_FACTOR;
+		errorThreshold = 0.5f;
+		qprecision = 1.0f / DISPARITY_FACTOR;
 
-		validMask = (dispGT > 0.0) & (dispGT != INFINITY);
+		validMask = (dispGT > 0.0f) & (dispGT != INFINITY);
 		validPixels = cv::countNonZero(validMask);
 		occMask = ~nonoccMask & validMask;
 		nonoccPixels = cv::countNonZero(nonoccMask);
@@ -80,11 +80,11 @@ public:
 		if (fp_output != nullptr) fclose(fp_output);
 	}
 
-	void setPrecision(double precision)
+	void setPrecision(float precision)
 	{
 		qprecision = precision;
 	}
-	void setErrorThreshold(double t)
+	void setErrorThreshold(float t)
 	{
 		errorThreshold = t;
 	}
@@ -103,7 +103,7 @@ public:
 	//	}
 	//}
 
-	void quantize(cv::Mat m, double precision)
+	void quantize(cv::Mat m, float precision)
 	{
 		cv::Mat qm = cv::Mat(m.size(), CV_32S);
 		m.convertTo(qm, CV_32S, 1.0 / precision);

@@ -41,7 +41,9 @@ struct Plane  {
 
 	cv::Vec<float, 3> GetNormal() const
 	{
-		float nz = 1.0 / sqrt(1.0 + a*a + b*b);
+		// Calc sqrt in double then cast to float.
+		// Doing sqrt in float changes the results.
+		float nz = float(1.0 / sqrt(1.0 + a*a + b*b));
 		float nx = -a*nz;
 		float ny = -b*nz;
 		return cv::Vec<float, 3>(nx, ny, nz);

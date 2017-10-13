@@ -137,8 +137,8 @@ public:
 	// This code reduces redudant data access.
 	// Not explicitly vectorized but hopefully done by auto vectorization of the compiler.
 	// Benchmark for Adirondack:
-	//   Desktop) 498 sec -> 408 sec.(18% reduction)
-	//   Laptop)  302 sec -> 237 sec.(22% reduction)
+	//   Desktop) 302 sec -> 237 sec.(22% reduction)
+	//   Laptop)  498 sec -> 408 sec.(18% reduction)
 	cv::Mat filter_raw(const cv::Mat& p) const
 	{
 		int rows = p.rows, cols = p.cols;
@@ -365,7 +365,7 @@ public:
 				cv::Mat w = cv::abs(I(patch) - I.at<cv::Vec3f>(y, x));
 				cv::exp(-channelSum(w) / sig2, w);
 
-				q.at<float>(y, x) = p(patch).dot(w);
+				q.at<float>(y, x) = (float)p(patch).dot(w);
 			}
 		}
 		return q;

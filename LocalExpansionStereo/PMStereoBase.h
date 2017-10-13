@@ -26,11 +26,11 @@ protected:
 	Evaluator* evaluator;
 	const Parameters params;
 
-	double dispVisScaling;
-	double dispVisOffset;
+	float dispVisScaling;
+	float dispVisOffset;
 
 public:
-	PMStereoBase(cv::Mat imL, cv::Mat imR, Parameters params, double maxDisparity, double minDisparity = 0, double maxVDisparity = 0) :
+	PMStereoBase(cv::Mat imL, cv::Mat imR, Parameters params, float maxDisparity, float minDisparity = 0, float maxVDisparity = 0) :
 		width(imL.cols),
 		height(imL.rows),
 		nNodes(imL.cols * imL.rows),
@@ -48,7 +48,7 @@ public:
 		currentCost_[0] = cv::Mat::zeros(height, width, CV_32F);
 		currentCost_[1] = cv::Mat::zeros(height, width, CV_32F);
 
-		dispVisScaling = 255.0 / (maxDisparity - minDisparity);
+		dispVisScaling = 255.0f / (maxDisparity - minDisparity);
 		dispVisOffset = -minDisparity * dispVisScaling;
 	}
 	virtual ~PMStereoBase()
@@ -61,7 +61,7 @@ public:
 	}
 
 
-	void setVisualizationParams(double scaling, double offset)
+	void setVisualizationParams(float scaling, float offset)
 	{
 		dispVisOffset = offset;
 		dispVisScaling = scaling;
@@ -117,12 +117,13 @@ protected:
 		}
 
 		for (int i = 0; i < 2; i++){
+			float sign = (i ? -1.0f : 1.0f);
 			for (int y = 0; y < height; y++)
 			for (int x = 0; x < width; x++){
 				cv::Point p(x, y);
 
 				float ds = disp[i].at<float>(p);
-				int rx = (float)x - ds * (i ? -1 : 1) + 0.5;
+				int rx = int((float)x - ds * sign + 0.5f);
 
 				cv::Point q(rx, y);
 				if (imageDomain.contains(q)){

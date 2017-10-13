@@ -92,7 +92,7 @@ protected:
 
 	float getDisparityPerturbationWidth(int m)
 	{
-		return (MAX_DISPARITY - MIN_DISPARITY) * pow(0.5, m + 1);
+		return (MAX_DISPARITY - MIN_DISPARITY) * pow(0.5f, m + 1);
 	}
 
 public:
@@ -125,7 +125,7 @@ public:
 		iter++;
 
 		cv::Point s = rect.tl() + p;
-		float zs = in.GetZ(s.x, s.y);
+		float zs = in.GetZ(float(s.x), float(s.y));
 		float dz = getDisparityPerturbationWidth(m);
 		float minz = std::max(MIN_DISPARITY, zs - dz);
 		float maxz = std::min(MAX_DISPARITY, zs + dz);
@@ -134,17 +134,17 @@ public:
 		float vs = in.v;
 		if (MAX_VDISPARITY != 0)
 		{
-			float dv = MAX_VDISPARITY * pow(0.5, m + 1);
+			float dv = MAX_VDISPARITY * pow(0.5f, m + 1);
 			float minv = std::max(-MAX_VDISPARITY, vs - dv);
 			float maxv = std::min(+MAX_VDISPARITY, vs + dv);
 			vs = cv::theRNG().uniform(minv, maxv);
 		}
-		float nr = randomNmax * pow(0.5, m);
+		float nr = randomNmax * pow(0.5f, m);
 		cv::Vec<float, 3> nv = in.GetNormal() + (cv::Vec<float, 3>) cvutils::getRandomUnitVector() * nr;
 
 		nv = nv / sqrt(nv.ddot(nv));
 
-		return Plane::CreatePlane(nv[0], nv[1], nv[2], zs, s.x, s.y, vs);
+		return Plane::CreatePlane(nv[0], nv[1], nv[2], zs, float(s.x), float(s.y), vs);
 	}
 	virtual bool isContinued() override
 	{
@@ -251,7 +251,7 @@ protected:
 		if ((1.0 - q) < eps)
 			SampleCnt = 1;
 		else
-			SampleCnt = log(1.0 - conf) / log(1.0 - q);
+			SampleCnt = int(log(1.0 - conf) / log(1.0 - q));
 
 		if (SampleCnt < 1)
 			SampleCnt = 1;
@@ -288,7 +288,7 @@ public:
 		disps = cv::Mat(unitRegion.size(), CV_32FC1);
 		for (int y = 0; y < coord.rows; y++)
 		for (int x = 0; x < coord.cols; x++){
-			auto c = cv::Vec3f(x + unitRegion.x, y + unitRegion.y, 1.0);
+			auto c = cv::Vec3f((float)x + unitRegion.x, (float)y + unitRegion.y, 1.0f);
 			coord.at<cv::Vec3f>(y, x) = c;
 			auto v = labeling.at<cv::Vec4f>(y + unitRegion.y, x + unitRegion.x);
 			disps.at<float>(y, x) = v[0] * c[0] + v[1] * c[1] + v[2];

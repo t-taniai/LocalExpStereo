@@ -70,8 +70,8 @@ struct Options
 };
 
 const Parameters paramsBF = Parameters(20, 20, "BF", 10);
-const Parameters paramsGF = Parameters(1.0, 20, "GF", 0.0001);
-const Parameters paramsGFfloat = Parameters(1.0, 20, "GFfloat", 0.0001); // Slightly faster
+const Parameters paramsGF = Parameters(1.0f, 20, "GF", 0.0001f);
+const Parameters paramsGFfloat = Parameters(1.0f, 20, "GFfloat", 0.0001f); // Slightly faster
 
 struct Calib
 {
@@ -209,7 +209,7 @@ bool loadData(const std::string inputDir, cv::Mat& im0, cv::Mat& im1, cv::Mat& d
 		fscanf(fp, "%d", &gt_scale); // Scaling factor of intensity to disparity for ground truth
 		fscanf(fp, "%d", &ndisp);
 		fclose(fp);
-		calib.gt_prec = 1.0 / gt_scale;
+		calib.gt_prec = 1.0f / gt_scale;
 		if(calib.ndisp <= 0) calib.ndisp = ndisp;
 	}
 	else
@@ -277,9 +277,9 @@ void MidV2(const std::string inputDir, const std::string outputDir, const Option
 		return;
 	printf("ndisp = %d\n", calib.ndisp);
 
-	double errorThresh = 0.5;
-	double vdisp = 0; // Purtubation of vertical displacement in the range of [-vdisp, vdisp]
-	double maxdisp = calib.ndisp - 1;
+	float errorThresh = 0.5f;
+	float vdisp = 0; // Purtubation of vertical displacement in the range of [-vdisp, vdisp]
+	float maxdisp = (float)calib.ndisp - 1;
 
 	Parameters param = paramsGF;
 	param.windR = options.filterRadious;
@@ -288,7 +288,7 @@ void MidV2(const std::string inputDir, const std::string outputDir, const Option
 	{
 		_mkdir((outputDir + "debug").c_str());
 
-		Evaluator *eval = new Evaluator(dispGT, nonocc, 255.0 / (maxdisp), "result", outputDir + "debug\\");
+		Evaluator *eval = new Evaluator(dispGT, nonocc, 255.0f / (maxdisp), "result", outputDir + "debug\\");
 		eval->setPrecision(calib.gt_prec);
 		eval->showProgress = false;
 		eval->setErrorThreshold(errorThresh);
@@ -338,12 +338,12 @@ void MidV3(const std::string inputDir, const std::string outputDir, const Option
 		return;
 	printf("ndisp = %d\n", calib.ndisp);
 
-	double maxdisp = calib.ndisp - 1;
-	double errorThresh = 1.0;
+	float maxdisp = (float)calib.ndisp - 1;
+	float errorThresh = 1.0f;
 	if (cvutils::contains(inputDir, "trainingQ") || cvutils::contains(inputDir, "testQ"))
-		errorThresh = errorThresh / 2.0;
+		errorThresh = errorThresh / 2.0f;
 	else if (cvutils::contains(inputDir, "trainingF") || cvutils::contains(inputDir, "testF"))
-		errorThresh = errorThresh * 2.0;
+		errorThresh = errorThresh * 2.0f;
 
 	Parameters param = paramsGF;
 	param.windR = options.filterRadious;
@@ -377,7 +377,7 @@ void MidV3(const std::string inputDir, const std::string outputDir, const Option
 	{
 		_mkdir((outputDir + "debug").c_str());
 
-		Evaluator *eval = new Evaluator(dispGT, nonocc, 255.0 / (maxdisp), "result", outputDir + "debug\\");
+		Evaluator *eval = new Evaluator(dispGT, nonocc, 255.0f / (maxdisp), "result", outputDir + "debug\\");
 		eval->setPrecision(-1);
 		eval->showProgress = false;
 		eval->setErrorThreshold(errorThresh);
@@ -392,9 +392,9 @@ void MidV3(const std::string inputDir, const std::string outputDir, const Option
 		IProposer* prop2 = new RandomProposer(7, maxdisp);
 		IProposer* prop3 = new ExpansionProposer(2);
 		IProposer* prop4 = new RansacProposer(1);
-		stereo.addLayer(w * 0.01, { prop1, prop4, prop2 });
-		stereo.addLayer(w * 0.03, { prop3, prop4 });
-		stereo.addLayer(w * 0.09, { prop3, prop4 });
+		stereo.addLayer(int(w * 0.01), { prop1, prop4, prop2 });
+		stereo.addLayer(int(w * 0.03), { prop3, prop4 });
+		stereo.addLayer(int(w * 0.09), { prop3, prop4 });
 
 		cv::Mat labeling, rawdisp;
 		if (options.doDual)
@@ -427,11 +427,20 @@ int main(int argc, const char** args)
 	ArgsParser parser(argc, args);
 	Options options;
 	options.loadOptionValues(parser);
+	unsigned int seed = (unsigned int)time(NULL);
+#if 1
+	// For debugging
+	//  1  99.4        262247  252693  9554    10.51   8.54
+	options.targetDir = "../data/MiddV3/trainingH/Adirondack";
+	options.outputDir = "../results/Adirondack";
+	options.mode = "MiddV3";
+	options.smooth_weight = 0.5;
+	options.pmIterations = 0;
+	seed = 0;
+#endif
 	options.printOptionValues();
 
 	int nThread = omp_get_max_threads();
-	unsigned int seed = (unsigned int)time(NULL);
-	//seed = 0;
 	#pragma omp parallel for
 	for (int j = 0; j < nThread; j++)
 	{
@@ -447,7 +456,6 @@ int main(int argc, const char** args)
 
 	printf("\n\n");
 
-	std::string mode;
 	if (options.mode == "MiddV2")
 	{
 		printf("Running by Middlebury V2 mode.\n");

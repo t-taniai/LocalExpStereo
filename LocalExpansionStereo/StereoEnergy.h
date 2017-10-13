@@ -25,13 +25,13 @@ struct Parameters
 	std::string filterName; // "BF" or "GF" or "GFfloat" or ""
 
 	Parameters(float lambda = 20, int windR = 20, std::string filterName = "BF", float filter_param1 = 10)
-		: alpha(0.9)
-		, omega(10.0)
-		, th_grad(2.0)
-		, th_col(10.0)
+		: alpha(0.9f)
+		, omega(10.0f)
+		, th_grad(2.0f)
+		, th_col(10.0f)
 		, lambda(lambda)
-		, th_smooth(1.0)
-		, epsilon(0.01)
+		, th_smooth(1.0f)
+		, epsilon(0.01f)
 		, windR(windR)
 		, neighborNum(8)
 		, filterName(filterName)
@@ -111,7 +111,7 @@ public:
 
 		for (int y = 0; y < imL.rows; y++){
 			for (int x = 0; x < imL.cols; x++){
-				coordinates.at<cv::Vec<float, 4>>(y, x) = cv::Vec<float, 4>(x, y, 1.0, 0);
+				coordinates.at<cv::Vec<float, 4>>(y, x) = cv::Vec<float, 4>((float)x, (float)y, 1.0f, 0);
 			}
 		}
 		initSmoothnessCoeff();
@@ -125,7 +125,7 @@ public:
 		// CV_PI/4‚Å a = 1, b = 0 ‚Ü‚Å
 		cv::Vec3d n = cvutils::getRandomUnitVector(CV_PI / 3);
 		//cv::Vec3d n = cvutils::getRandomUnitVector(0.5);
-		return Plane::CreatePlane(n, zs, s.x, s.y, vs);
+		return Plane::CreatePlane(n, zs, (float)s.x, (float)s.y, vs);
 	}
 
 	void initSmoothnessCoeff()
@@ -393,6 +393,8 @@ public:
 		}
 	}
 
+	// This function is inefficient.
+	// Change Mat operations to raw C operations.
 	void computeSmoothnessTermsExpansion(const cv::Mat& labeling0_m, Plane label1, cv::Rect region, std::vector<cv::Mat>& cost00, std::vector<cv::Mat>& cost01, std::vector<cv::Mat>& cost10, bool onlyForward = false, int mode = 0) const
 	{
 		cv::Rect rect_ee = cv::Rect(M + region.x, M + region.y, region.width, region.height);
@@ -470,8 +472,8 @@ public:
 	{
 		if (pos.width == 1 && pos.height == 1)
 		{
-			if(IsValiLabel(label, pos.tl())) cv::Mat_<uchar>(1, 1, 255);
-			else cv::Mat_<uchar>::zeros(1, 1);
+			if(IsValiLabel(label, pos.tl())) return cv::Mat_<uchar>(1, 1, 255);
+			else return cv::Mat_<uchar>::zeros(1, 1);
 		}
 		else
 		{
@@ -552,7 +554,7 @@ public:
 			//bands.push_back(GY);
 			cv::merge(bands, ExI[m]);
 		}
-		thresh_color = params.th_col * (1.0 - params.alpha);
+		thresh_color = params.th_col * (1.0f - params.alpha);
 		thresh_gradient = params.th_grad * params.alpha;
 
 		if (params.filterName == "BF")
@@ -594,12 +596,12 @@ public:
 		}
 
 		cv::Point2f src_pnt[3], dst_pnt[3];
-		float sign = mode ? -1 : 1;
+		float sign = mode ? -1.f : 1.f;
 
-		int x00 = filterRect.x;
-		int y00 = filterRect.y;
-		int x11 = filterRect.x + filterRect.width;
-		int y11 = filterRect.y + filterRect.height;
+		float x00 = (float)filterRect.x;
+		float y00 = (float)filterRect.y;
+		float x11 = x00 + filterRect.width;
+		float y11 = y00 + filterRect.height;
 		dst_pnt[0] = cv::Point2f(0, 0);
 		dst_pnt[1] = cv::Point2f(0, y11 - y00);
 		dst_pnt[2] = cv::Point2f(x11 - x00, 0);

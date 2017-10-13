@@ -73,7 +73,7 @@ protected:
 
 
 public:
-	FastGCStereo(cv::Mat imL, cv::Mat imR, Parameters params, double maxDisparity, double minDisparity = 0, double maxVDisparity = 0)
+	FastGCStereo(cv::Mat imL, cv::Mat imR, Parameters params, float maxDisparity, float minDisparity = 0, float maxVDisparity = 0)
 		: PMStereoBase(imL, imR, params, maxDisparity, minDisparity, maxVDisparity)
 		, layermng(imL.cols, imL.rows, params.windR, 0)
 	{
