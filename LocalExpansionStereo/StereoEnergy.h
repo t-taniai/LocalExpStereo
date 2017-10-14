@@ -222,20 +222,20 @@ public:
 		return sum;
 	}
 
-	float computeSmoothnessTerm(Plane ls, Plane lt, cv::Point ps, int neighborId, int mode = 0) const
+	float computeSmoothnessTerm(const Plane& ls, const Plane& lt, cv::Point ps, int neighborId, int mode = 0) const
 	{
 		cv::Point pt = ps + neighbors[neighborId];
 		return smoothnessCoeff[mode][neighborId].at<float>(ps + cv::Point(M, M))
 			* std::min(fabs(ls.GetZ(ps) - lt.GetZ(ps)) + fabs(ls.GetZ(pt) - lt.GetZ(pt)), params.th_smooth) * params.lambda;
 	}
 
-	float computeSmoothnessTerm(Plane ls, Plane lt, cv::Point ps, cv::Point pt, int mode = 0) const
+	float computeSmoothnessTerm(const Plane& ls, const Plane& lt, cv::Point ps, cv::Point pt, int mode = 0) const
 	{
 		return std::max(computePatchWeight(ps, pt, mode), params.epsilon)
 			* std::min(fabs(ls.GetZ(ps) - lt.GetZ(ps)) + fabs(ls.GetZ(pt) - lt.GetZ(pt)), params.th_smooth) * params.lambda;
 	}
 
-	float computeSmoothnessTermWithoutConst(Plane ls, Plane lt, cv::Point ps, cv::Point pt) const
+	float computeSmoothnessTermWithoutConst(const Plane& ls, const Plane& lt, cv::Point ps, cv::Point pt) const
 	{
 		return std::min(fabs(ls.GetZ(ps) - lt.GetZ(ps)) + fabs(ls.GetZ(pt) - lt.GetZ(pt)), params.th_smooth);
 	}
@@ -393,8 +393,8 @@ public:
 		}
 	}
 
-	// This function is inefficient.
-	// Change Mat operations to raw C operations.
+#if 1
+	// This implementation is somewhat redundant.
 	void computeSmoothnessTermsExpansion(const cv::Mat& labeling0_m, Plane label1, cv::Rect region, std::vector<cv::Mat>& cost00, std::vector<cv::Mat>& cost01, std::vector<cv::Mat>& cost10, bool onlyForward = false, int mode = 0) const
 	{
 		cv::Rect rect_ee = cv::Rect(M + region.x, M + region.y, region.width, region.height);
@@ -403,6 +403,8 @@ public:
 		cv::Scalar sc = label1.toScalar();
 		cv::Mat disp0_of_ee_at_ee = cvutils::channelDot(label0_ee, coord_ee);
 		cv::Mat disp1_at_ee = cvutils::channelSum(coord_ee.mul(sc));
+		//cv::Mat disp1_at_ee = label1.toDispMap(region); // This changes results due to small numerical differences.
+
 		if (disp0_of_ee_at_ee.depth() != CV_32F)
 		{
 			disp0_of_ee_at_ee.convertTo(disp0_of_ee_at_ee, CV_32F);
@@ -449,6 +451,110 @@ public:
 			cost10[i] = cost10[i].mul(smoothnessCoeffL_nb, params.lambda);
 		}
 	}
+#else
+	// This implementation make the method 10% faster but slighly changes results.
+	// Need to check if there is no significant performance down.
+	void computeSmoothnessTermsExpansion(const cv::Mat& labeling0_m, Plane label1, cv::Rect region, std::vector<cv::Mat>& cost00, std::vector<cv::Mat>& cost01, std::vector<cv::Mat>& cost10, bool onlyForward = false, int mode = 0) const
+	{
+		cv::Rect rect_m = cv::Rect(region.x, region.y, region.width + 2*M, region.height + 2*M);
+		cv::Mat label0_m = labeling0_m(rect_m);
+		cv::Mat coord_m = coordinates_m(rect_m);
+		cv::Mat disp0_p_at_p_m = cvutils::channelDot(label0_m, coord_m);
+		//cv::Mat disp1_x_at_p_m = label1.toDispMap(rect_m - cv::Point(M, M));
+		cv::Mat disp1_x_at_p_m = cvutils::channelSum(coord_m.mul(label1.toScalar()));
+
+		std::vector<cv::Mat> abc0_m;
+		cv::split(label0_m, abc0_m);
+		float a = label1.a;
+		float b = label1.b;
+		float c = label1.c;
+
+		cv::Rect rect_p = cv::Rect(M, M, region.width, region.height);
+		cv::Mat disp0_p_at_p = disp0_p_at_p_m(rect_p);
+		cv::Mat disp1_x_at_p = disp1_x_at_p_m(rect_p);
+
+		cost00 = std::vector<cv::Mat>(neighbors.size());
+		cost01 = std::vector<cv::Mat>(neighbors.size());
+		cost10 = std::vector<cv::Mat>(neighbors.size());
+		for (int i = 0; i < neighbors.size(); i++)
+		{
+			float dx = neighbors[i].x;
+			float dy = neighbors[i].y;
+			if (onlyForward && (dy * width + dx <= 0))
+				continue;
+
+			cv::Rect rect_q = rect_p + neighbors[i];
+			cv::Mat a0_p = abc0_m[0](rect_p);
+			cv::Mat b0_p = abc0_m[1](rect_p);
+			cv::Mat a0_q = abc0_m[0](rect_q);
+			cv::Mat b0_q = abc0_m[1](rect_q);
+
+			cv::Mat disp0_q_at_q = disp0_p_at_p_m(rect_q);
+			//cv::Mat disp0_p_at_q = disp0_p_at_p + dx*a0_p + dy*b0_p;
+			//cv::Mat disp0_q_at_p = disp0_q_at_q + (-dx)*a0_q + (-dy)*b0_q;
+			//cv::Mat disp1_x_at_q = disp1_x_at_p + (a * dx + b * dy);
+			float disp1_pq = a * dx + b * dy;
+
+			//{
+			//	cv::Rect rect_le = rect_ee + neighbors[i];
+			//	cv::Mat label0_le = labeling0_m(rect_le);
+			//	cv::Mat coord_le = coordinates_m(rect_le);
+
+			//	cv::Mat disp0_of_le_at_ee = cvutils::channelDot(label0_le, coord_ee);
+			//	cv::Mat disp0_of_ee_at_le = cvutils::channelDot(label0_ee, coord_le);
+			//	cv::Mat disp0_of_le_at_le = cvutils::channelDot(label0_le, coord_le);
+			//	cv::Mat disp1_at_le = cvutils::channelSum(coord_le.mul(sc));
+			//}
+			cv::Mat smoothnessCoeffL_nb = smoothnessCoeff[mode][i](rect_p + region.tl());
+
+			cost00[i] = cv::Mat_<float>(region.size());
+			cost01[i] = cv::Mat_<float>(region.size());
+			cost10[i] = cv::Mat_<float>(region.size());
+
+			float th_smooth = params.th_smooth;
+			float lambda = params.lambda;
+			int h = region.height;
+			int w = region.width;
+			for (int y = 0; y < h; y++)
+			{
+				auto coef = smoothnessCoeffL_nb.ptr<float>(y);
+				auto c00 = cost00[i].ptr<float>(y);
+				auto c01 = cost01[i].ptr<float>(y);
+				auto c10 = cost10[i].ptr<float>(y);
+				auto d0_q_at_q = disp0_q_at_q.ptr<float>(y);
+				auto d0_p_at_p = disp0_p_at_p.ptr<float>(y);
+				auto d1_x_at_p = disp1_x_at_p.ptr<float>(y);
+				//auto d0_p_at_q = disp0_p_at_q.ptr<float>(y);
+				//auto d0_q_at_p = disp0_q_at_p.ptr<float>(y);
+				//auto d1_x_at_q = disp1_x_at_q.ptr<float>(y);
+
+				auto a0_p_ = a0_p.ptr<float>(y);
+				auto b0_p_ = b0_p.ptr<float>(y);
+				auto a0_q_ = a0_q.ptr<float>(y);
+				auto b0_q_ = b0_q.ptr<float>(y);
+
+				for (int x = 0; x < w; x++)
+				{
+					auto d0_q_q = d0_q_at_q[x];
+					auto d0_p_p = d0_p_at_p[x];
+					auto d1_x_p = d1_x_at_p[x];
+					auto d0_p_q = d0_p_p + dx * a0_p_[x] + dy * b0_p_[x];//d0_p_at_q[x];
+					auto d0_q_p = d0_q_q - dx * a0_q_[x] - dy * b0_q_[x];//d0_q_at_p[x];
+					auto d1_x_q = d1_x_p + disp1_pq;
+
+					auto weight = coef[x] * lambda;
+					auto v00 = fabs(d0_p_p - d0_q_p) + fabs(d0_p_q - d0_q_q);
+					auto v01 = fabs(d0_p_p - d1_x_p) + fabs(d0_p_q - d1_x_q);
+					auto v10 = fabs(d1_x_p - d0_q_p) + fabs(d1_x_q - d0_q_q);
+
+					c00[x] = MIN(v00, th_smooth) * weight;
+					c01[x] = MIN(v01, th_smooth) * weight;
+					c10[x] = MIN(v10, th_smooth) * weight;
+				}
+			}
+		}
+	}
+#endif
 
 	// Avoid extreme labels
 	bool IsValiLabel(Plane label, cv::Point pos) const

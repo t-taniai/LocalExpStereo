@@ -428,14 +428,15 @@ int main(int argc, const char** args)
 	Options options;
 	options.loadOptionValues(parser);
 	unsigned int seed = (unsigned int)time(NULL);
-#if 1
+#if 0
 	// For debugging
 	//  1  99.4        262247  252693  9554    10.51   8.54
 	options.targetDir = "../data/MiddV3/trainingH/Adirondack";
 	options.outputDir = "../results/Adirondack";
 	options.mode = "MiddV3";
 	options.smooth_weight = 0.5;
-	options.pmIterations = 0;
+	options.pmIterations = 2;
+	//options.threadNum = 1;
 	seed = 0;
 #endif
 	options.printOptionValues();

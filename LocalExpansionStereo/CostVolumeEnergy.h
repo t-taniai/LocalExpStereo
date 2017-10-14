@@ -11,45 +11,6 @@ protected:
 	cv::Mat vol[2];
 	int interpolate;
 
-	cv::Mat computeL2CostMap(const cv::Mat& featMapL, const cv::Mat& featMapR, float threshold = 4.0) const
-	{
-		int ic = featMapL.channels();
-		cv::Mat costs(featMapL.size(), CV_32F);
-
-		for (int i = 0; i < featMapL.rows; i++)
-		{
-			const float *t = featMapL.ptr<float>(i);
-			const float *s = featMapR.ptr<float>(i);
-
-			for (int j = 0; j < featMapL.cols; j++)
-			{
-				auto end = t + ic;
-				double nrm = 0;
-#if 1
-				__m128 sum = _mm_setzero_ps();
-				__m128 v;
-				while (t != end)
-				{
-					sum = _mm_add_ps(sum,
-						_mm_or_ps(_mm_dp_ps(v = _mm_sub_ps(_mm_load_ps(&t[0 * 4]), _mm_load_ps(&s[0 * 4])), v, 0xF1),
-						_mm_or_ps(_mm_dp_ps(v = _mm_sub_ps(_mm_load_ps(&t[1 * 4]), _mm_load_ps(&s[1 * 4])), v, 0xF2),
-						_mm_or_ps(_mm_dp_ps(v = _mm_sub_ps(_mm_load_ps(&t[2 * 4]), _mm_load_ps(&s[2 * 4])), v, 0xF4),
-						_mm_dp_ps(v = _mm_sub_ps(_mm_load_ps(&t[3 * 4]), _mm_load_ps(&s[3 * 4])), v, 0xF8)))));
-					t += 16;
-					s += 16;
-				}
-				nrm = (sum.m128_f32[0] + sum.m128_f32[1] + sum.m128_f32[2] + sum.m128_f32[3]);
-#else
-				for (; t != end; t++, s++){
-					auto v = (*t) - (*s);
-					nrm += v * v;
-				}
-#endif
-				costs.at<float>(i, j) = std::min(threshold, (float)nrm);
-			}
-		}
-		return costs;
-	}
 
 public:
 	CostVolumeEnergy(const cv::Mat imL, const cv::Mat imR, const cv::Mat volL, const cv::Mat volR, Parameters params, float MAX_DISPARITY, float MIN_DISPARITY = 0, float MAX_VDISPARITY = 0)

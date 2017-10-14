@@ -67,6 +67,33 @@ struct Plane  {
 		return a != in.a || b != in.b || c != in.c || v != in.v;
 	}
 
+	cv::Mat toDispMap(cv::Rect rect) const
+	{
+		int w = rect.width;
+		int h = rect.height;
+
+		cv::Mat_<float> u(1, rect.width);
+		cv::Mat_<float> v(1, rect.height);
+		auto pu = u.ptr<float>(0);
+		auto pv = v.ptr<float>(0);
+		for (int x = 0; x < w; x++)
+			pu[x] = a * (rect.x + x);
+
+		for (int y = 0; y < h; y++)
+			pv[y] = b * (rect.y + y);
+		
+		cv::Mat_<float> disp(rect.size());
+		for (int y = 0; y < h; y++)
+		{
+			auto d = disp.ptr<float>(y);
+			auto dv = pv[y];
+			for (int x = 0; x < w; x++)
+			{
+				d[x] = (pu[x] + dv) + c;
+			}
+		}
+		return disp;
+	}
 
 	cv::Vec<float, 4> toVec4() const
 	{
