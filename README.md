@@ -3,20 +3,19 @@
 This is an implementatioin of a stereo matching method described in
 
 ```
-@article{Taniai16,
+@article{Taniai17,
   author    = {Tatsunori Taniai and
                Yasuyuki Matsushita and
                Yoichi Sato and
                Takeshi Naemura},
-  title     = {{Continuous Stereo Matching using Local Expansion Moves}},
-  journal   = {CoRR (arXiv)},
-  volume    = {abs/1603.08328},
-  year      = {2016},
-  url       = {http://arxiv.org/abs/1603.08328},
+  title     = {{Continuous 3D Label Stereo Matching using Local Expansion Moves}},
+  journal   = {{Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}},
+  year      = {2017},
+  note      = {(accepted)},
 }
 ```
 
-The code is for research purpose only. If you use our code, please cite the above paper. (Note that although we have slightly changed the title in the latest preprint in 2017, we recommend to cite the above orginal version in 2016). We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique.
+The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique.
 
 ```
 @inproceedings{Taniai14,
