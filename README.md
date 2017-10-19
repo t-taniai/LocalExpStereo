@@ -1,4 +1,4 @@
-# Continuous Stereo Matching using Local Expansion Moves
+# Continuous 3D Label Stereo Matching using Local Expansion Moves
 
 This is an implementatioin of a stereo matching method described in
 
@@ -28,7 +28,7 @@ The code is for research purpose only. If you use our code, please cite the abov
   pages     = {1613--1620},
 }
 ```
-See also [our project site](http://taniai.space/projects/stereo/) and [paper](https://arxiv.org/abs/1603.08328).
+See also [our project site](http://taniai.space/projects/stereo/) and [preprint](https://arxiv.org/abs/1603.08328).
 
 ## Running environment
 - Visual Studio 2017 Community (installed with the VC++ 2015 vc140 toolset if using the following OpenCV build)
