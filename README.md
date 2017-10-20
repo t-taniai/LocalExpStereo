@@ -70,3 +70,20 @@ For demonstration, please use Adirondack below that contains image pairs, calibr
 - [Adirondack (1.2 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip)
 
 Note that these matching costs are raw outputs from CNNs without cross-based filter and SGM aggregation.
+
+## Tips
+### Test your own matching costs
+By replacing matching cost data files of MC-CNN (im0.acrt and im1.acrt), you can easily use your own matching costs other than MC-CNN without changing the code. These files directly store a 3D float volume and can be read as follows.
+```
+float volume0[ndisp][height][width];
+FILE *file = fopen("im0.acrt", "rb");
+fread(volume0, sizeof(float), ndisp*height*width, file);
+```
+Here, a float value volume0[d][y][x] stores a matching cost between two (left and right) image patches centered at im0(x, y) and im1(x-d, y). The ndisp will be loaded from calib.txt, or can be specified by the -ndisp argument. Note that values of volume0[d][y][x] for x-d < 0 (i.e., where im1(x-d, y) is out of the image domain) are ignored and filled by volume0[d][y][x+d]. If your matching costs provide valid values for these regions, you should modify the code to turn off this interpolation by disabling the fillOutOfView function.
+
+During the inference, the algorithm computes the data term D_p(a,b,c) at p = (x, y) by local 3D aggregation using a plane label (a,b,c) as below.
+```
+D_p(a,b,c) = sum_{s=(u,v) in window W_p} w_ps * min(volume0[u*a + v*b + c][v][u], options.mc_threshold)
+(Equation (6) in the paper)
+```
+Here, w_ps is the filter kernel of guided image filtering, and volume0[u*a + v*b + c][v][u] is computed with linear interpolation in d-space (because u*a + v*b + c is not integer).
