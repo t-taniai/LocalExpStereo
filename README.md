@@ -69,6 +69,13 @@ For demonstration, please use Adirondack below that contains image pairs, calibr
 - [testH (22.0 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar)
 - [Adirondack (1.2 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip)
 
+Temporary links:
+- [trainingH_im0 (9.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1ZnlQMGdwbm9LSTQ/view?usp=sharing)
+- [testH_im0 (12.9 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1UkdjYjZDNHI0Tkk/view?usp=sharing)
+- [Adirondack (1.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1eG5GTzVhVlYzRUE/view?usp=sharing)
+
+Here, only left volume (im0.acrt) is provided. Data of right volume can be recovered from left.
+
 Note that these matching costs are raw outputs from CNNs without cross-based filter and SGM aggregation.
 
 ## Tips
