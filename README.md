@@ -1,5 +1,7 @@
 # Continuous 3D Label Stereo Matching using Local Expansion Moves
 
+![Local Expansion Moves](teaser.png)
+
 This is an implementatioin of a stereo matching method described in
 
 ```
