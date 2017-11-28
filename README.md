@@ -96,3 +96,23 @@ D_p(a,b,c) = sum_{s=(u,v) in window W_p} w_ps * min(volume0[u*a + v*b + c][v][u]
 (Equation (6) in the paper)
 ```
 Here, w_ps is the filter kernel of guided image filtering, and volume0[u*a + v*b + c][v][u] is computed with linear interpolation in d-space (because u*a + v*b + c is not integer).
+
+
+### Possible extensions and references
+We suggest possibe extensions of the algorithm and list related references.
+
+#### Use superpixels instead of grid cells
+We currently use only regular grid-cells for defining local expansion moves. When extending to use superpixels, following papers will be useful.
++ Taniai et al., "Joint Recovery of Dense Correspondence and Cosegmentation in Two Images" (CVPR 2016)
++ Li et al., "PMSC: PatchMatch-Based Superpixel Cut for Accurate Stereo Matching" (IEEE Trans. Circuits Syst. Video Technol.)
++ Hur and Roth, "MirrorFlow: Exploiting Symmetries in Joint Optical Flow and Occlusion Estimation" (ICCV 2017)
+
+#### Use simultaneous fusion moves (fusion space) instead of expansion moves
+Our loca expansion move method is currently based on binary fusion, which combines a current solution with a single candidate label in one fusion operation. This operation can be replaced with simultaneous fusion (or fusion space), which combines combines a current solution with multiple candidate labels in one fusion operation. This technique leads to better avoidance of local minimums. It can be implemented by using TRW-S as shown in the following papers.
++ Ulén and Olsson, "Simultaneous Fusion Moves for 3D-Label Stereo" (EMMCVPR 2013)
++ Liu et al., "Layered Scene Decomposition via the Occlusion-CRF" (CVPR 2016)
+
+#### Apply to other problems than stereo
+Our loca expansion move method is also useful for high-dimensional label estimation problems in optical flow and other dense correspondence problems. In the first paper below, we infer 4 DoF motion labels (similrity transformation) by using additional candidate label proposers. The second paper estimates 8 DoF motion labels (homography) using our method.
++ Taniai et al., "Joint Recovery of Dense Correspondence and Cosegmentation in Two Images" (CVPR 2016)
++ Hur and Roth, "MirrorFlow: Exploiting Symmetries in Joint Optical Flow and Occlusion Estimation" (ICCV 2017)
