@@ -17,7 +17,7 @@ This is an implementatioin of a stereo matching method described in
 }
 ```
 
-The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique.
+The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique and also propose a MRF stereo model combining the slanted patch matchin and curvature regularization terms.
 
 ```
 @inproceedings{Taniai14,
