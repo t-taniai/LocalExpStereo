@@ -17,7 +17,7 @@ This is an implementatioin of a stereo matching method described in
 }
 ```
 
-The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique and also propose a MRF stereo model combining the slanted patch matchin and curvature regularization terms.
+The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique and also propose a MRF stereo model combining the slanted patch matching and curvature regularization terms.
 
 ```
 @inproceedings{Taniai14,
@@ -67,18 +67,14 @@ template class Graph<float,float,double>;
 We use matching cost volumes computed by [MC-CNN-acrt](https://github.com/jzbontar/mc-cnn).
 We provide pre-computed matching cost data for 30 test and training image pairs of Middlebury benchmark V3.
 For demonstration, please use Adirondack below that contains image pairs, calibration data, and ground truth.
-- [trainingH (15.7 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/trainingH.rar)
-- [testH (22.0 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/testH.rar)
-- [Adirondack (1.2 GB)](http://www2.hci.iis.u-tokyo.ac.jp/datasets/data/LocalExpStereo/Adirondack.zip)
-
-Temporary links:
 - [trainingH_im0 (9.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1ZnlQMGdwbm9LSTQ/view?usp=sharing)
 - [testH_im0 (12.9 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1UkdjYjZDNHI0Tkk/view?usp=sharing)
 - [Adirondack (1.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1eG5GTzVhVlYzRUE/view?usp=sharing)
 
-Here, only left volume (im0.acrt) is provided. Data of right volume can be recovered from left.
-
-Note that these matching costs are raw outputs from CNNs without cross-based filter and SGM aggregation.
+Remarks:
+- Only left volume data (im0.acrt) is provided. Right volume data can be recovered from left.
+- These matching costs are raw outputs from CNNs without cross-based filter and SGM aggregation.
+- We also provide [MC-CNN-Chainer](https://github.com/t-taniai/mc-cnn-chainer), pre-trained MC-CNN models in Chainer for easily producing these data on your own.
 
 ## Tips
 ### Test your own matching costs
