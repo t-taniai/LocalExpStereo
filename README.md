@@ -5,7 +5,7 @@
 This is an implementatioin of a stereo matching method described in
 
 ```
-@article{Taniai18,
+@article{Taniai17,
   author    = {Tatsunori Taniai and
                Yasuyuki Matsushita and
                Yoichi Sato and
