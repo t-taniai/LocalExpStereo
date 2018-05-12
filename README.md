@@ -12,8 +12,8 @@ This is an implementatioin of a stereo matching method described in
                Takeshi Naemura},
   title     = {{Continuous 3D Label Stereo Matching using Local Expansion Moves}},
   journal   = {{Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}},
-  year      = {2018},
-  note      = {(to appear)},
+  year      = {2017},
+  note      = {(accepted)},
 }
 ```
 
