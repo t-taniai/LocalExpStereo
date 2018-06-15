@@ -11,13 +11,14 @@ This is an implementatioin of a stereo matching method described in
                Yoichi Sato and
                Takeshi Naemura},
   title     = {{Continuous 3D Label Stereo Matching using Local Expansion Moves}},
-  journal   = {{Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}},
+  journal   = {{IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}},
   year      = {2017},
-  note      = {(accepted)},
+  doi       = {10.1109/TPAMI.2017.2766072}, 
+  note      = {Early access preprint},
 }
 ```
 
-The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique and also propose a MRF stereo model combining the slanted patch matching and curvature regularization terms.
+The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique and also propose a MRF stereo model combining the slanted patch matching (Bleyer et al., 2011) and curvature regularization (Olsson et al., 2013) terms.
 
 ```
 @inproceedings{Taniai14,
@@ -30,7 +31,7 @@ The code is for research purpose only. If you use our code, please cite the abov
   pages     = {1613--1620},
 }
 ```
-See also [our project site](http://taniai.space/projects/stereo/) and [preprint](https://arxiv.org/abs/1603.08328).
+See also [project site](http://taniai.space/projects/stereo/) and [IEEE preprint](https://ieeexplore.ieee.org/document/8081755/) and [extended preprint on arXiv](https://arxiv.org/abs/1603.08328).
 
 ## Running environment
 - Visual Studio 2017 Community (installed with the VC++ 2015 vc140 toolset if using the following OpenCV build)
