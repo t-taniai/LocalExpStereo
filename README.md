@@ -5,16 +5,18 @@
 This is an implementatioin of a stereo matching method described in
 
 ```
-@article{Taniai17,
+@article{Taniai18,
   author    = {Tatsunori Taniai and
                Yasuyuki Matsushita and
                Yoichi Sato and
                Takeshi Naemura},
   title     = {{Continuous 3D Label Stereo Matching using Local Expansion Moves}},
   journal   = {{IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)}},
-  year      = {2017},
-  doi       = {10.1109/TPAMI.2017.2766072}, 
-  note      = {Early access preprint},
+  year      = {2018},
+  volume    = {40},
+  number    = {11},
+  pages     = {2725--2739},
+  doi       = {10.1109/TPAMI.2017.2766072},
 }
 ```
 [[Project Site](http://taniai.space/projects/stereo/)]  [[IEEE preprint](https://ieeexplore.ieee.org/document/8081755/)]  [[arXiv preprint (supplemented)](https://arxiv.org/abs/1603.08328)].
