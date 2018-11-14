@@ -39,7 +39,7 @@ The code is for research purpose only. If you use our code, please cite the abov
 ## Running environment
 - Visual Studio 2017 Community (installed with the VC++ 2015 vc140 toolset if using the following OpenCV build)
 - OpenCV 3 (OpenCV 3.1.0 package will be automatically installed via NuGet upon the initial build)
-- Maxflow code by Boykov and Kolmogorov [[Code Lv3.01]](http://vision.csd.uwo.ca/code) [[Code v3.04]](http://pub.ist.ac.at/~vnk/software.html)
+- Maxflow code by Boykov and Kolmogorov [[Code v3.01]](http://vision.csd.uwo.ca/code) [[Code v3.04]](http://pub.ist.ac.at/~vnk/software.html)
 
 ## How to Run?
 1. Download and extract maxflow source code to "maxflow" directory. Modify instances.inc to add the following line
