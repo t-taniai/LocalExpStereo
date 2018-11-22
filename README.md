@@ -22,7 +22,7 @@ This is an implementatioin of a stereo matching method described in
 [[Project Site](http://taniai.space/projects/stereo/)]  [[IEEE preprint](https://ieeexplore.ieee.org/document/8081755/)]  [[arXiv preprint (supplemented)](https://arxiv.org/abs/1603.08328)].
 
 
-The code is for research purpose only. If you use our code, please cite the above paper. We also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique and also propose a MRF stereo model combining the slanted patch matching (Bleyer et al., 2011) and curvature regularization (Olsson et al., 2013) terms used in the both papers.
+The code is for research purpose only. If you use our code, please cite the above paper. Along with our TPAMI paper we also encourage to cite the following conference paper too, where we describe the fundamental idea of our optimization technique and also propose a new MRF stereo model (used in both our CVPR and TPAMI papers) that effectively combines the slanted patch matching (Bleyer et al., 2011) and curvature regularization (Olsson et al., 2013) terms.
 
 ```
 @inproceedings{Taniai14,
