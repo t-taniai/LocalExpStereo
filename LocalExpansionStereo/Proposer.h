@@ -187,6 +187,8 @@ protected:
 		cv::Mat result;
 
 		cv::Mat ranpts = cv::Mat_<float>::zeros(3, 3);
+		cv::Mat ranpts_ = cv::Mat_<cv::Vec3f>(ranpts);
+		cv::Mat pts_ = cv::Mat_<cv::Vec3f>(pts);
 
 		while (no_sam < max_sam)
 		{
@@ -194,7 +196,7 @@ protected:
 			auto ransam = randperm(len);
 			for (int i = 0; i < 3; i++)
 			{
-				ranpts.at<cv::Vec3f>(i) = pts.at<cv::Vec3f>(ransam[i]);
+				ranpts_.at<cv::Vec3f>(i) = pts_.at<cv::Vec3f>(ransam[i]);
 				div.at<float>(i) = disp.at<float>(ransam[i]);
 			}
 			/// compute a distance of all points to a plane given by pts(:, sam) to dist
@@ -208,12 +210,13 @@ protected:
 				// Re - estimate plane and inliers
 				cv::Mat b = cv::Mat_<float>::zeros(no_i, 1);
 				cv::Mat A = cv::Mat_<float>::zeros(no_i, 3);
+				cv::Mat A_ = cv::Mat_<cv::Vec3f>(A);
 
 				// MATLAB: A = pts(v, :);
 				for (int i = 0, j = 0; i < no_i; i++)
 				if (v.at<uchar>(i))
 				{
-					A.at<cv::Vec3f>(j) = pts.at<cv::Vec3f>(i);
+					A_.at<cv::Vec3f>(j) = pts_.at<cv::Vec3f>(i);
 					b.at<float>(j) = disp.at<float>(i);
 					j++;
 				}
