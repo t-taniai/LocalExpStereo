@@ -9,7 +9,7 @@ struct Plane  {
 
 	Plane(){}
 	Plane(float a, float b, float c) : a(a), b(b), c(c), v(0){}
-	Plane(float a, float b, float c, float y) : a(a), b(b), c(c), v(v){}
+	Plane(float a, float b, float c, float v) : a(a), b(b), c(c), v(v){}
 
 	static Plane CreatePlane(float nx, float ny, float nz, float z, float x, float y)
 	{
