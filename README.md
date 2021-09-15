@@ -71,9 +71,9 @@ template class Graph<float,float,double>;
 We use matching cost volumes computed by [MC-CNN-acrt](https://github.com/jzbontar/mc-cnn).
 We provide pre-computed matching cost data for 30 test and training image pairs of [Middlebury benchmark V3](http://vision.middlebury.edu/stereo/submit3/).
 For demonstration, please use Adirondack below that contains image pairs, calibration data, and ground truth.
-- [trainingH_im0 (9.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1ZnlQMGdwbm9LSTQ/view?usp=sharing)
-- [testH_im0 (12.9 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1UkdjYjZDNHI0Tkk/view?usp=sharing)
-- [Adirondack (1.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1eG5GTzVhVlYzRUE/view?usp=sharing)
+- [trainingH_im0 (9.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1ZnlQMGdwbm9LSTQ/view?usp=sharing&resourcekey=0-18USTaSLUdavUdX8H-igcQ)
+- [testH_im0 (12.9 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1UkdjYjZDNHI0Tkk/view?usp=sharing&resourcekey=0-ckWSWOObvPNRkyKNvwoKGg)
+- [Adirondack (1.2 GB)](https://drive.google.com/file/d/0B-VxeI7PlJE1eG5GTzVhVlYzRUE/view?usp=sharing&resourcekey=0-NbSStHTw1gnzZJp0sJ7TWg)
 
 Remarks:
 - Only left volume data (im0.acrt) is provided. Right volume data can be recovered from left.
