@@ -184,7 +184,7 @@ protected:
 		cv::Mat inls = cv::Mat_<uchar>(len, 1, (uchar)0);
 		int no_i_c = 0;
 		cv::Mat N = cv::Mat_<float>(3, 1);
-		cv::Mat result;
+		cv::Mat result = cv::Mat_<float>(3, 1);
 
 		cv::Mat ranpts = cv::Mat_<float>::zeros(3, 3);
 		cv::Mat ranpts_ = cv::Mat_<cv::Vec3f>(ranpts);
